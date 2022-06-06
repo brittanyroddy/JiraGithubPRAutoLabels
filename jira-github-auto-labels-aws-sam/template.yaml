@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  jira-github-auto-labels
+
+  Labels GitHub PRs with the appropriate label (feature, fix) based on associated Jira ticket.
+
+Resources:
+  JiraGithubAutoLabelsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.lambdaHandler
+      Runtime: nodejs16.x
+      Environment:
+        Variables:
+          GITHUB_TOKEN: '{{resolve:ssm:/JiraGitHubAutoLabels/GitHubToken}}'
+          REPO_OWNER: '{{resolve:ssm:/JiraGitHubAutoLabels/RepoOwner}}'
+          REPO: '{{resolve:ssm:/JiraGitHubAutoLabels/Repo}}'
+          JIRA_USERNAME: '{{resolve:ssm:/JiraGitHubAutoLabels/JiraUsername}}'
+          JIRA_PASSWORD: '{{resolve:ssm:/JiraGitHubAutoLabels/JiraPassword}}'
+          JIRA_PROJECT_NAME: '{{resolve:ssm:/JiraGitHubAutoLabels/JiraProjectName}}'
+          CONCURRENT_LIMIT: '{{resolve:ssm:/JiraGitHubAutoLabels/JiraProjectName}}'
+      Timeout: 30
+      Architectures:
+        - x86_64
+      Events:
+        Schedule:
+          Type: Schedule
+          Properties:
+            Name: SYNC_JIRA_LABELS_TO_GITHUB
+            Schedule: cron(0/10 * ? * * *)
