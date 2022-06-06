@@ -13,8 +13,6 @@ const config = {
   concurrent_limit: process.env.CONCURRENT_LIMIT ?? 5,
 };
 
-console.log(config);
-
 async function getJiraTicket(name) {
   let data = config.jira_username + ':' + config.jira_password;
   let buff = Buffer.from(data);
